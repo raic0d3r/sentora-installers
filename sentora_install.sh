@@ -133,7 +133,7 @@ elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
     
     DB_PCKG="mysql-server"
     HTTP_PCKG="apache2"
-    PHP_PCKG="apache2-mod-php5"
+    PHP_PCKG="apache2-mod-php7.3"
     BIND_PCKG="bind9"
 fi
   
@@ -800,7 +800,7 @@ echo -e "\n-- Installing Postfix"
 if [[ "$OS" = "CentOs" ]]; then
     $PACKAGE_INSTALLER postfix postfix-perl-scripts
     USR_LIB_PATH="/usr/libexec"
-elif [[ "$OS" = "Ubuntu" ]]; then
+elif [[ "$OS" = "debian" ]]; then
     $PACKAGE_INSTALLER postfix postfix-mysql
     USR_LIB_PATH="/usr/lib"
 fi
@@ -1021,13 +1021,13 @@ if [[ "$OS" = "CentOs" ]]; then
     PHP_INI_PATH="/etc/php.ini"
     PHP_EXT_PATH="/etc/php.d"
 elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
-    $PACKAGE_INSTALLER libapache2-mod-php5 php5-common php5-cli php5-mysql php5-gd php5-mcrypt php5-curl php-pear php5-imap php5-xmlrpc php5-xsl php5-intl
+    $PACKAGE_INSTALLER libapache2-mod-php7.3 php7.3-common php7.3-cli php7.3-mysql php7.3-gd php7.3-mcrypt php7.3-curl php-pear php7.3-imap php7.3-xmlrpc php7.3-xsl php7.3-intl
     if [ "$VER" = "14.04" ]; then
-        php5enmod mcrypt  # missing in the package for Ubuntu 14, is this needed for debian 8 as well?
+        php7.3enmod mcrypt  # missing in the package for Ubuntu 14, is this needed for debian 8 as well?
     else
-        $PACKAGE_INSTALLER php5-suhosin
+        $PACKAGE_INSTALLER php7.3-suhosin
     fi
-    PHP_INI_PATH="/etc/php5/apache2/php.ini"
+    PHP_INI_PATH="/etc/php7.3/apache2/php.ini"
 fi
 # Setup php upload dir
 mkdir -p $PANEL_DATA/temp
@@ -1044,7 +1044,7 @@ if [[ "$OS" = "CentOs" ]]; then
     # Remove session & php values from apache that cause override
     sed -i "/php_value/d" /etc/httpd/conf.d/php.conf
 elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
-    sed -i "s|;session.save_path = \"/var/lib/php5\"|session.save_path = \"$PANEL_DATA/sessions\"|" $PHP_INI_PATH
+    sed -i "s|;session.save_path = \"/var/lib/php7.3\"|session.save_path = \"$PANEL_DATA/sessions\"|" $PHP_INI_PATH
 fi
 sed -i "/php_value/d" $PHP_INI_PATH
 echo "session.save_path = $PANEL_DATA/sessions;">> $PHP_INI_PATH
@@ -1060,7 +1060,7 @@ sed -i "s|expose_php = On|expose_php = Off|" $PHP_INI_PATH
 if [[ "$OS" = "CentOs" || "$OS" = "debian" || ( "$OS" = "Ubuntu" && "$VER" = "14.04") ]] ; then
     echo -e "\n# Building suhosin"
     if [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
-        $PACKAGE_INSTALLER php5-dev
+        $PACKAGE_INSTALLER php7.3-dev
     fi
     SUHOSIN_VERSION="0.9.37.1"
     wget -nv -O suhosin.zip https://github.com/stefanesser/suhosin/archive/$SUHOSIN_VERSION.zip
