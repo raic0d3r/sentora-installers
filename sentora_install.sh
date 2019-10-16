@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 SENTORA_INSTALLER_VERSION="master"
-SENTORA_CORE_VERSION="Free"
+SENTORA_CORE_VERSION="1.0.1"
 
 PANEL_PATH="/etc/sentora"
 PANEL_DATA="/var/sentora"
