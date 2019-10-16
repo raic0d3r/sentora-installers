@@ -70,9 +70,9 @@ ARCH=$(uname -m)
 
 echo "Detected : $OS  $VER  $ARCH"
 
-if [[ "$OS" = "CentOs" && ("$VER" = "6" || "$VER" = "7" ) || 
+if [[ "$OS" = "CentOs" && ("$VER" = "6" || "$VER" = "10" ) || 
       "$OS" = "Ubuntu" && ("$VER" = "12.04" || "$VER" = "14.04" ) || 
-      "$OS" = "debian" && ("$VER" = "7" || "$VER" = "8" ) ]] ; then
+      "$OS" = "debian" && ("$VER" = "10" || "$VER" = "8" ) ]] ; then
     echo "Ok."
 else
     echo "Sorry, this OS is not supported by Sentora." 
@@ -115,7 +115,7 @@ if [[ "$OS" = "CentOs" ]] ; then
        rpm -q "$1" &> /dev/null
     }
 
-    if  [[ "$VER" = "7" ]]; then
+    if  [[ "$VER" = "10" ]]; then
         DB_PCKG="mariadb" &&  echo "DB server will be mariaDB"
     else 
         DB_PCKG="mysql" && echo "DB server will be mySQL"
@@ -357,7 +357,7 @@ echo -e "\n-- Updating repositories and packages sources"
 if [[ "$OS" = "CentOs" ]]; then
 #EPEL Repo Install
   EPEL_BASE_URL="http://dl.fedoraproject.org/pub/epel/$VER/$ARCH";
-  if  [[ "$VER" = "7" ]]; then
+  if  [[ "$VER" = "10" ]]; then
      EPEL_FILE=$(wget -q -O- "$EPEL_BASE_URL/Packages/e/" | grep -oP '(?<=href=")epel-release.*(?=">)')
      wget "$EPEL_BASE_URL/Packages/e/$EPEL_FILE"
   else
@@ -400,7 +400,7 @@ if [[ "$OS" = "CentOs" ]]; then
     chkconfig sendmail off
 
     # disable firewall
-    if  [[ "$VER" = "7" ]]; then
+    if  [[ "$VER" = "10" ]]; then
         FIREWALL_SERVICE="firewalld"
     else 
         FIREWALL_SERVICE="iptables"
@@ -444,7 +444,7 @@ deb-src http://httpredir.debian.org/debian $(lsb_release -sc)-updates main
 deb http://security.debian.org/ $(lsb_release -sc)/updates main
 deb-src http://security.debian.org/ $(lsb_release -sc)/updates main
 EOF
-    elif [ "$VER" = "7" ]; then
+    elif [ "$VER" = "10" ]; then
         cat > /etc/apt/sources.list <<EOF
 deb http://httpredir.debian.org/debian $(lsb_release -sc) main
 deb-src http://httpredir.debian.org/debian $(lsb_release -sc) main
@@ -736,14 +736,14 @@ $PACKAGE_INSTALLER "$DB_PCKG"
 if [[ "$OS" = "CentOs" ]]; then
     $PACKAGE_INSTALLER "DB_PCKG-devel" "$DB_PCKG-server" 
     MY_CNF_PATH="/etc/my.cnf"
-    if  [[ "$VER" = "7" ]]; then
+    if  [[ "$VER" = "10" ]]; then
         DB_SERVICE="mariadb"
     else 
         DB_SERVICE="mysqld"
     fi
 elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
     $PACKAGE_INSTALLER bsdutils libsasl2-modules-sql libsasl2-modules
-    if [[ "$VER" = "12.04" || "$VER" = "7" ]]; then
+    if [[ "$VER" = "12.04" || "$VER" = "10" ]]; then
         $PACKAGE_INSTALLER db4.7-util
     fi
     MY_CNF_PATH="/etc/mysql/my.cnf"
@@ -913,7 +913,7 @@ if [[ "$OS" = "CentOs" ]]; then
     HTTP_SERVICE="httpd"
     HTTP_USER="apache"
     HTTP_GROUP="apache"
-    if [[ "$VER" = "7" ]]; then
+    if [[ "$VER" = "10" ]]; then
         # Disable extra modules in centos 7
         disable_file /etc/httpd/conf.modules.d/01-cgi.conf
         disable_file /etc/httpd/conf.modules.d/00-lua.conf
@@ -990,7 +990,7 @@ elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
 fi
 
 # adjustments for apache 2.4
-if [[ ("$OS" = "CentOs" && "$VER" = "7") || 
+if [[ ("$OS" = "CentOs" && "$VER" = "10") || 
       ("$OS" = "Ubuntu" && "$VER" = "14.04") || 
       ("$OS" = "debian" && "$VER" = "8") ]] ; then 
     # Order deny,allow / Deny from all   ->  Require all denied
