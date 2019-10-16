@@ -13,6 +13,8 @@ Our installation script currently support the following operating systems/distri
 To install Please use the following command:
 
 ```
+wget http://repo.mysql.com/mysql-apt-config_0.8.13-1_all.deb
+sudo dpkg -i mysql-apt-config_0.8.13-1_all.deb
 bash <(curl -L -Ss https://raw.githubusercontent.com/raic0d3r/sentora-installers/master/sentora_install.sh)
 ```
 Please note that the MASTER branch installer above is ONLY recommended for developers and project staff!
@@ -27,13 +29,10 @@ Uninstaller scripts, much like the Upgrade scripts are not recommended for use a
 ## ALL INFORMATION BELOW MAY BE INACCURATE OR INCOMPLETE ##
 * * *
 
-## Vagrant installer/upgrader development & testing ##
 
 Folders mounted to /root/sentora/{install,uninstall,upgrade}
 
 ## Official maintainers ##
-
-The officially supported operating system installer and upgrade scripts are maintained internally by [members of the official Sentora team](http://sentora.org/about/the-team).
 
 
 Sentora important files paths and OS specificities
