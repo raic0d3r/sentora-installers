@@ -981,7 +981,7 @@ echo -e "\n-- Installing and configuring PHP"
 #    PHP_INI_PATH="/etc/php.ini"
 #    PHP_EXT_PATH="/etc/php.d"
 if [[ "$OS" = "debian" ]]; then
-    $PACKAGE_INSTALLER libapache2-mod-php php-common php-cli php-mysql php-gd php-mcrypt php-curl php-pear php-imap php-xmlrpc php-xsl php-intl
+    $PACKAGE_INSTALLER php-mbstring libapache2-mod-php php-common php-cli php-mysql php-gd php-mcrypt php-curl php-pear php-imap php-xmlrpc php-xsl php-intl
 #    if [ "$VER" = "8" ]; then
 #        phpenmod mcrypt  # missing in the package for Ubuntu 14, is this needed for debian 8 as well?
 #    else
