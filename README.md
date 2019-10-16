@@ -88,4 +88,40 @@ Please be aware that community supported install and upgrade scripts that we wil
 - Will be licensed under the GPL and hosted on this repository.
 - Must maintain the same user interface as our official install/upgrade scripts (eg. shell script echo's and 'read' statements must match the same wording to ensure that the installation experience across all OSes and distributions give the same user experience.)
 
+
+
+
+Sentora important files paths and OS specificities
+File or directory	 	Ubuntu	CentOs
+Sentora passwords file	 	/root/passwords.txt
+Sentora config files	 	/etc/sentora/configs/
+Sentora config - apache config file	 	/etc/sentora/configs/apache/httpd.conf
+Sentora config - virtual host file	 	/etc/sentora/configs/apache/httpd-vhosts.conf
+Sentora config - FTP config file	 	/etc/sentora/configs/proftpd/proftpd-mysql.conf
+Sentora panel files	 	/etc/sentora/panel/
+Sentora panel static pages	 	/etc/sentora/panel/etc/static/
+Sentora panel themes	 	/etc/sentora/panel/etc/styles/
+Sentora log files	 	/var/sentora/logs/
+Sentora users websites	 	/var/sentora/hostdata/[Sentora-login]/public_html/[domain_tld]
+Sentora email data	 	/var/sentora/vmail/[domain.tld]
+ 	 	 	 
+Apache config file	 	/etc/apache2/httpd.conf	/etc/httpd/conf/httpd.conf
+Apache log files	 	/var/log/apache2/error.log	/var/log/httpd/error.log
+ 	 	 	 
+Php.ini	 	 /etc/php5/apache2/php.ini	/etc/php.ini
+ 	 	 	 
+Mysql config file	 	/etc/mysql/my.cnf	/etc/my.cnf
+Mysql log file	 	/var/log/mysql/error.log	/var/log/mysqld.log
+ 
+
+Other infos	Ubuntu	CentOs
+Apache user:group	www-data:www-data	apache:apache
+How to restart apache ?	service apache2 restart	service httpd restart
+Run Sentora daemon	sudo /usr/bin/php -q /etc/sentora/panel/bin/daemon.php
+ 	 	 
+ 
+
+
+
+
 If you have any queries regarding the above rules please feel free to contact us at: [info@sentora.org](mailto:info@sentora.org).
