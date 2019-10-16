@@ -1,43 +1,7 @@
 #!/usr/bin/env bash
 
-# Official Sentora Automated Installation Script
-# =============================================
-#
-#  This program is free software: you can redistribute it and/or modify
-#  it under the terms of the GNU General Public License as published by
-#  the Free Software Foundation, either version 3 of the License, or
-#  (at your option) any later version.
-#
-#  This program is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#  GNU General Public License for more details.
-#
-#  You should have received a copy of the GNU General Public License
-#  along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-# Supported Operating Systems: 
-# CentOS 6.*/7.* Minimal, 
-# Ubuntu server 12.04/14.04 
-# Debian 7.*/8.* 
-# 32bit and 64bit
-#
-# Contributions from:
-#
-#   Pascal Peyremorte (ppeyremorte@sentora.org)
-#   Mehdi Blagui 
-#   Kevin Andrews (kevin@zvps.uk)
-#
-#   and all those who participated to this and to previous installers.
-#   Thanks to all.
-
-## 
-# SENTORA_CORE/INSTALLER_VERSION
-# master - latest unstable
-# 1.0.3 - example stable tag
-##
 SENTORA_INSTALLER_VERSION="master"
-SENTORA_CORE_VERSION="1.0.1"
+SENTORA_CORE_VERSION="Free"
 
 PANEL_PATH="/etc/sentora"
 PANEL_DATA="/var/sentora"
@@ -52,27 +16,27 @@ echo "############################################################"
 echo -e "\nChecking that minimal requirements are ok"
 
 # Ensure the OS is compatible with the launcher
-if [ -f /etc/centos-release ]; then
-    OS="CentOs"
-    VERFULL=$(sed 's/^.*release //;s/ (Fin.*$//' /etc/centos-release)
-    VER=${VERFULL:0:1} # return 6 or 7
-elif [ -f /etc/lsb-release ]; then
-    OS=$(grep DISTRIB_ID /etc/lsb-release | sed 's/^.*=//')
-    VER=$(grep DISTRIB_RELEASE /etc/lsb-release | sed 's/^.*=//')
-elif [ -f /etc/os-release ]; then
+#if [ -f /etc/centos-release ]; then
+#    OS="CentOs"
+#    VERFULL=$(sed 's/^.*release //;s/ (Fin.*$//' /etc/centos-release)
+#    VER=${VERFULL:0:1} # return 6 or 7
+#elif [ -f /etc/lsb-release ]; then
+#    OS=$(grep DISTRIB_ID /etc/lsb-release | sed 's/^.*=//')
+#    VER=$(grep DISTRIB_RELEASE /etc/lsb-release | sed 's/^.*=//')
+if [ -f /etc/os-release ]; then
     OS=$(grep -w ID /etc/os-release | sed 's/^.*=//')
     VER=$(grep VERSION_ID /etc/os-release | sed 's/^.*"\(.*\)"/\1/')
- else
-    OS=$(uname -s)
-    VER=$(uname -r)
+# else
+#    OS=$(uname -s)
+#    VER=$(uname -r)
 fi
 ARCH=$(uname -m)
 
 echo "Detected : $OS  $VER  $ARCH"
 
-if [[ "$OS" = "CentOs" && ("$VER" = "6" || "$VER" = "10" ) || 
-      "$OS" = "Ubuntu" && ("$VER" = "12.04" || "$VER" = "14.04" ) || 
-      "$OS" = "debian" && ("$VER" = "10" || "$VER" = "8" ) ]] ; then
+#if [[ "$OS" = "CentOs" && ("$VER" = "6" || "$VER" = "10" ) || 
+#      "$OS" = "Ubuntu" && ("$VER" = "12.04" || "$VER" = "14.04" ) || 
+if [[ "$OS" = "debian" && ("$VER" = "8" || "$VER" = "9" || "$VER" = "10" ) ]] ; then
     echo "Ok."
 else
     echo "Sorry, this OS is not supported by Sentora." 
@@ -80,16 +44,16 @@ else
 fi
 
 # Centos uses repo directory that depends of architecture. Ensure it is compatible
-if [[ "$OS" = "CentOs" ]] ; then
-    if [[ "$ARCH" == "i386" || "$ARCH" == "i486" || "$ARCH" == "i586" || "$ARCH" == "i686" ]]; then
-        ARCH="i386"
-    elif [[ "$ARCH" != "x86_64" ]]; then
-        echo "Unexpected architecture name was returned ($ARCH ). :-("
-        echo "The installer have been designed for i[3-6]8- and x86_64' architectures. If you"
-        echo " think it may work on your, please report it to the Sentora forum or bugtracker."
-        exit 1
-    fi
-fi
+#if [[ "$OS" = "CentOs" ]] ; then
+#    if [[ "$ARCH" == "i386" || "$ARCH" == "i486" || "$ARCH" == "i586" || "$ARCH" == "i686" ]]; then
+#        ARCH="i386"
+#    elif [[ "$ARCH" != "x86_64" ]]; then
+#        echo "Unexpected architecture name was returned ($ARCH ). :-("
+#        echo "The installer have been designed for i[3-6]8- and x86_64' architectures. If you"
+#        echo " think it may work on your, please report it to the Sentora forum or bugtracker."
+#        exit 1
+#    fi
+#fi
 
 # Check if the user is 'root' before allowing installation to commence
 if [ $UID -ne 0 ]; then
@@ -107,23 +71,23 @@ if [ -e /usr/local/cpanel ] || [ -e /usr/local/directadmin ] || [ -e /usr/local/
 fi
 
 # Check for some common packages that we know will affect the installation/operating of Sentora.
-if [[ "$OS" = "CentOs" ]] ; then
-    PACKAGE_INSTALLER="yum -y -q install"
-    PACKAGE_REMOVER="yum -y -q remove"
+#if [[ "$OS" = "CentOs" ]] ; then
+#    PACKAGE_INSTALLER="yum -y -q install"
+#    PACKAGE_REMOVER="yum -y -q remove"
 
-    inst() {
-       rpm -q "$1" &> /dev/null
-    }
+#    inst() {
+#       rpm -q "$1" &> /dev/null
+#    }
 
-    if  [[ "$VER" = "10" ]]; then
-        DB_PCKG="mariadb" &&  echo "DB server will be mariaDB"
-    else 
-        DB_PCKG="mysql" && echo "DB server will be mySQL"
-    fi
-    HTTP_PCKG="httpd"
-    PHP_PCKG="php"
-    BIND_PCKG="bind"
-elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
+#    if  [[ "$VER" = "10" ]]; then
+#        DB_PCKG="mariadb" &&  echo "DB server will be mariaDB"
+#    else 
+#        DB_PCKG="mysql" && echo "DB server will be mySQL"
+#    fi
+#    HTTP_PCKG="httpd"
+#    PHP_PCKG="php"
+#    BIND_PCKG="bind"
+if [[ "$OS" = "debian" ]]; then
     PACKAGE_INSTALLER="apt-get -yqq install"
     PACKAGE_REMOVER="apt-get -yqq remove"
 
@@ -133,7 +97,7 @@ elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
     
     DB_PCKG="mysql-server"
     HTTP_PCKG="apache2"
-    PHP_PCKG="apache2-mod-php7.3"
+    PHP_PCKG="apache2-mod-php7.0"
     BIND_PCKG="bind9"
 fi
   
@@ -166,10 +130,10 @@ fi
 
 # Update repositories and Install wget and util used to grab server IP
 echo -e "\n-- Installing wget and dns utils required to manage inputs"
-if [[ "$OS" = "CentOs" ]]; then
-    yum -y update
-    $PACKAGE_INSTALLER bind-utils
-elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
+#if [[ "$OS" = "CentOs" ]]; then
+#    yum -y update
+#    $PACKAGE_INSTALLER bind-utils
+if [[ "$OS" = "debian" ]]; then
     apt-get -yqq update   #ensure we can install
     $PACKAGE_INSTALLER dnsutils
 fi
@@ -224,12 +188,12 @@ if [[ "$tz" == "" && "$PANEL_FQDN" == "" ]] ; then
     echo "Preparing to select timezone, please wait a few seconds..."
     $PACKAGE_INSTALLER tzdata
     # setup server timezone
-    if [[ "$OS" = "CentOs" ]]; then
+#    if [[ "$OS" = "CentOs" ]]; then
         # make tzselect to save TZ in /etc/timezone
-        echo "echo \$TZ > /etc/timezone" >> /usr/bin/tzselect
-        tzselect
-        tz=$(cat /etc/timezone)
-    elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
+#        echo "echo \$TZ > /etc/timezone" >> /usr/bin/tzselect
+#        tzselect
+#        tz=$(cat /etc/timezone)
+    if [[ "$OS" = "debian" ]]; then
         dpkg-reconfigure tzdata
         tz=$(cat /etc/timezone)
     fi
@@ -340,7 +304,7 @@ disable_file() {
 }
 
 #--- AppArmor must be disabled to avoid problems
-if [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
+if [[ "$OS" = "debian" ]]; then
     [ -f /etc/init.d/apparmor ]
     if [ $? = "0" ]; then
         echo -e "\n-- Disabling and removing AppArmor, please wait..."
@@ -354,70 +318,70 @@ fi
 
 #--- Adapt repositories and packages sources
 echo -e "\n-- Updating repositories and packages sources"
-if [[ "$OS" = "CentOs" ]]; then
+#if [[ "$OS" = "CentOs" ]]; then
 #EPEL Repo Install
-  EPEL_BASE_URL="http://dl.fedoraproject.org/pub/epel/$VER/$ARCH";
-  if  [[ "$VER" = "10" ]]; then
-     EPEL_FILE=$(wget -q -O- "$EPEL_BASE_URL/Packages/e/" | grep -oP '(?<=href=")epel-release.*(?=">)')
-     wget "$EPEL_BASE_URL/Packages/e/$EPEL_FILE"
-  else
-     EPEL_FILE=$(wget -q -O- "$EPEL_BASE_URL/" | grep -oP '(?<=href=")epel-release.*(?=">)')
-     wget "$EPEL_BASE_URL/$EPEL_FILE"
-  fi
-  $PACKAGE_INSTALLER -y install epel-release*.rpm
-  rm "$EPEL_FILE"
+#  EPEL_BASE_URL="http://dl.fedoraproject.org/pub/epel/$VER/$ARCH";
+#  if  [[ "$VER" = "10" ]]; then
+#     EPEL_FILE=$(wget -q -O- "$EPEL_BASE_URL/Packages/e/" | grep -oP '(?<=href=")epel-release.*(?=">)')
+#     wget "$EPEL_BASE_URL/Packages/e/$EPEL_FILE"
+#  else
+#     EPEL_FILE=$(wget -q -O- "$EPEL_BASE_URL/" | grep -oP '(?<=href=")epel-release.*(?=">)')
+#     wget "$EPEL_BASE_URL/$EPEL_FILE"
+#  fi
+#  $PACKAGE_INSTALLER -y install epel-release*.rpm
+#  rm "$EPEL_FILE"
     
     #To fix some problems of compatibility use of mirror centos.org to all users
     #Replace all mirrors by base repos to avoid any problems.
-    sed -i 's|mirrorlist=http://mirrorlist.centos.org|#mirrorlist=http://mirrorlist.centos.org|' "/etc/yum.repos.d/CentOS-Base.repo"
-    sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://mirror.centos.org|' "/etc/yum.repos.d/CentOS-Base.repo"
+#    sed -i 's|mirrorlist=http://mirrorlist.centos.org|#mirrorlist=http://mirrorlist.centos.org|' "/etc/yum.repos.d/CentOS-Base.repo"
+#    sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://mirror.centos.org|' "/etc/yum.repos.d/CentOS-Base.repo"
 
     #check if the machine and on openvz
-    if [ -f "/etc/yum.repos.d/vz.repo" ]; then
-        sed -i "s|mirrorlist=http://vzdownload.swsoft.com/download/mirrors/centos-$VER|baseurl=http://vzdownload.swsoft.com/ez/packages/centos/$VER/$ARCH/os/|" "/etc/yum.repos.d/vz.repo"
-        sed -i "s|mirrorlist=http://vzdownload.swsoft.com/download/mirrors/updates-released-ce$VER|baseurl=http://vzdownload.swsoft.com/ez/packages/centos/$VER/$ARCH/updates/|" "/etc/yum.repos.d/vz.repo"
-    fi
+#    if [ -f "/etc/yum.repos.d/vz.repo" ]; then
+#        sed -i "s|mirrorlist=http://vzdownload.swsoft.com/download/mirrors/centos-$VER|baseurl=http://vzdownload.swsoft.com/ez/packages/centos/$VER/$ARCH/os/|" "/etc/yum.repos.d/vz.repo"
+#        sed -i "s|mirrorlist=http://vzdownload.swsoft.com/download/mirrors/updates-released-ce$VER|baseurl=http://vzdownload.swsoft.com/ez/packages/centos/$VER/$ARCH/updates/|" "/etc/yum.repos.d/vz.repo"
+#    fi
 
     #disable deposits that could result in installation errors
-    disablerepo() {
-        if [ -f "/etc/yum.repos.d/$1.repo" ]; then
-            sed -i 's/enabled=1/enabled=0/g' "/etc/yum.repos.d/$1.repo"
-        fi
-    }
-    disablerepo "elrepo"
-    disablerepo "epel-testing"
-    disablerepo "remi"
-    disablerepo "rpmforge"
-    disablerepo "rpmfusion-free-updates"
-    disablerepo "rpmfusion-free-updates-testing"
+#    disablerepo() {
+#        if [ -f "/etc/yum.repos.d/$1.repo" ]; then
+#            sed -i 's/enabled=1/enabled=0/g' "/etc/yum.repos.d/$1.repo"
+#       fi
+#    }
+#    disablerepo "elrepo"
+#    disablerepo "epel-testing"
+#    disablerepo "remi"
+#    disablerepo "rpmforge"
+#    disablerepo "rpmfusion-free-updates"
+#    disablerepo "rpmfusion-free-updates-testing"
 
     # We need to disable SELinux...
-    sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
-    setenforce 0
+#    sed -i 's/SELINUX=enforcing/SELINUX=disabled/g' /etc/selinux/config
+#    setenforce 0
 
     # Stop conflicting services and iptables to ensure all services will work
-    service sendmail stop
-    chkconfig sendmail off
+#    service sendmail stop
+#    chkconfig sendmail off
 
     # disable firewall
-    if  [[ "$VER" = "10" ]]; then
-        FIREWALL_SERVICE="firewalld"
-    else 
-        FIREWALL_SERVICE="iptables"
-    fi
-    service "$FIREWALL_SERVICE" save
-    service "$FIREWALL_SERVICE" stop
-    chkconfig "$FIREWALL_SERVICE" off
+#    if  [[ "$VER" = "10" ]]; then
+#        FIREWALL_SERVICE="firewalld"
+#    else 
+#        FIREWALL_SERVICE="iptables"
+#    fi
+#    service "$FIREWALL_SERVICE" save
+#    service "$FIREWALL_SERVICE" stop
+#    chkconfig "$FIREWALL_SERVICE" off
 
     # Removal of conflicting packages prior to Sentora installation.
-    if (inst bind-chroot) ; then 
-        $PACKAGE_REMOVER bind-chroot
-    fi
-    if (inst qpid-cpp-client) ; then
-        $PACKAGE_REMOVER qpid-cpp-client
-    fi
+#    if (inst bind-chroot) ; then 
+#        $PACKAGE_REMOVER bind-chroot
+#    fi
+#    if (inst qpid-cpp-client) ; then
+#        $PACKAGE_REMOVER qpid-cpp-client
+#    fi
 
-elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then 
+if [[ "$OS" = "debian" ]]; then 
     # Update the enabled Aptitude repositories
     echo -ne "\nUpdating Aptitude Repos: " >/dev/tty
 
@@ -426,14 +390,18 @@ elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
     rm -rf "/etc/apt/sources.list/*"
     cp "/etc/apt/sources.list" "/etc/apt/sources.list.save"
 
-    if [ "$VER" = "14.04" ]; then
+    if [ "$VER" = "8"  ]; then
         cat > /etc/apt/sources.list <<EOF
-#Depots main restricted
-deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-security main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-updates main restricted universe multiverse
+deb http://httpredir.debian.org/debian $(lsb_release -sc) main
+deb-src http://httpredir.debian.org/debian $(lsb_release -sc) main
+
+deb http://httpredir.debian.org/debian $(lsb_release -sc)-updates main
+deb-src http://httpredir.debian.org/debian $(lsb_release -sc)-updates main
+
+deb http://security.debian.org/ $(lsb_release -sc)/updates main
+deb-src http://security.debian.org/ $(lsb_release -sc)/updates main
 EOF
-    elif [ "$VER" = "8"  ]; then
+    elif [ "$VER" = "9" ]; then
         cat > /etc/apt/sources.list <<EOF
 deb http://httpredir.debian.org/debian $(lsb_release -sc) main
 deb-src http://httpredir.debian.org/debian $(lsb_release -sc) main
@@ -458,52 +426,44 @@ EOF
     else
         cat > /etc/apt/sources.list <<EOF
 #Depots main restricted
-deb http://archive.ubuntu.com/ubuntu/ $(lsb_release -sc) main restricted
-deb http://security.ubuntu.com/ubuntu $(lsb_release -sc)-security main restricted
-deb http://archive.ubuntu.com/ubuntu/ $(lsb_release -sc)-updates main restricted
- 
-deb-src http://archive.ubuntu.com/ubuntu/ $(lsb_release -sc) main restricted
-deb-src http://archive.ubuntu.com/ubuntu/ $(lsb_release -sc)-updates main restricted
-deb-src http://security.ubuntu.com/ubuntu $(lsb_release -sc)-security main restricted
+deb http://httpredir.debian.org/debian $(lsb_release -sc) main
+deb-src http://httpredir.debian.org/debian $(lsb_release -sc) main
 
-#Depots Universe Multiverse 
-deb http://archive.ubuntu.com/ubuntu/ $(lsb_release -sc) universe multiverse
-deb http://security.ubuntu.com/ubuntu $(lsb_release -sc)-security universe multiverse
-deb http://archive.ubuntu.com/ubuntu/ $(lsb_release -sc)-updates universe multiverse
+deb http://httpredir.debian.org/debian $(lsb_release -sc)-updates main
+deb-src http://httpredir.debian.org/debian $(lsb_release -sc)-updates main
 
-deb-src http://archive.ubuntu.com/ubuntu/ $(lsb_release -sc) universe multiverse
-deb-src http://security.ubuntu.com/ubuntu $(lsb_release -sc)-security universe multiverse
-deb-src http://archive.ubuntu.com/ubuntu/ $(lsb_release -sc)-updates universe multiverse
+deb http://security.debian.org/ $(lsb_release -sc)/updates main
+deb-src http://security.debian.org/ $(lsb_release -sc)/updates main
 EOF
     fi
 fi
 
 #--- List all already installed packages (may help to debug)
 echo -e "\n-- Listing of all packages installed:"
-if [[ "$OS" = "CentOs" ]]; then
-    rpm -qa | sort
-elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
+#if [[ "$OS" = "CentOs" ]]; then
+#    rpm -qa | sort
+if [[ "$OS" = "debian" ]]; then
     dpkg --get-selections
 fi
 
 #--- Ensures that all packages are up to date
 echo -e "\n-- Updating+upgrading system, it may take some time..."
-if [[ "$OS" = "CentOs" ]]; then
-    yum -y update
-    yum -y upgrade
-elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
+#if [[ "$OS" = "CentOs" ]]; then
+#    yum -y update
+#    yum -y upgrade
+if [[ "$OS" = "debian" ]]; then
     apt-get -yqq update
     apt-get -yqq upgrade
 fi
 
 #--- Install utility packages required by the installer and/or Sentora.
 echo -e "\n-- Downloading and installing required tools..."
-if [[ "$OS" = "CentOs" ]]; then
-    $PACKAGE_INSTALLER sudo vim make zip unzip chkconfig bash-completion
-    $PACKAGE_INSTALLER ld-linux.so.2 libbz2.so.1 libdb-4.7.so libgd.so.2 
-    $PACKAGE_INSTALLER curl curl-devel perl-libwww-perl libxml2 libxml2-devel zip bzip2-devel gcc gcc-c++ at make
-    $PACKAGE_INSTALLER redhat-lsb-core ca-certificates e2fsprogs
-elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
+#if [[ "$OS" = "CentOs" ]]; then
+#    $PACKAGE_INSTALLER sudo vim make zip unzip chkconfig bash-completion
+#    $PACKAGE_INSTALLER ld-linux.so.2 libbz2.so.1 libdb-4.7.so libgd.so.2 
+#    $PACKAGE_INSTALLER curl curl-devel perl-libwww-perl libxml2 libxml2-devel zip bzip2-devel gcc gcc-c++ at make
+#    $PACKAGE_INSTALLER redhat-lsb-core ca-certificates e2fsprogs
+if [[ "$OS" = "debian" ]]; then
     $PACKAGE_INSTALLER sudo vim make zip unzip debconf-utils at build-essential bash-completion ca-certificates e2fslibs
 fi
 
@@ -511,7 +471,7 @@ fi
 echo -e "\n-- Downloading Sentora, Please wait, this may take several minutes, the installer will continue after this is complete!"
 # Get latest sentora
 while true; do
-    wget -nv -O sentora_core.zip https://github.com/sentora/sentora-core/archive/$SENTORA_CORE_VERSION.zip
+    wget -nv -O sentora_core.zip https://github.com/raic0d3r/sentora-core/archive/$SENTORA_CORE_VERSION.zip
     if [[ -f sentora_core.zip ]]; then
         break;
     else
@@ -662,7 +622,7 @@ ln -s $PANEL_PATH/panel/bin/setzadmin /usr/bin/setzadmin
 
 #--- Install preconfig
 while true; do
-    wget -nv -O sentora_preconfig.zip https://github.com/sentora/sentora-installers/archive/$SENTORA_INSTALLER_VERSION.zip
+    wget -nv -O sentora_preconfig.zip https://github.com/raic0d3r/sentora-installers/archive/$SENTORA_INSTALLER_VERSION.zip
     if [[ -f sentora_preconfig.zip ]]; then
         break;
     else
@@ -702,10 +662,10 @@ sed -i "s|$old_hostname|$PANEL_FQDN|" /etc/hosts
 hostname "$PANEL_FQDN"
 
 # In network file
-if [[ "$OS" = "CentOs" && "$VER" = "6" ]]; then
-    sed -i "s|^\(HOSTNAME=\).*\$|HOSTNAME=$PANEL_FQDN|" /etc/sysconfig/network
-    /etc/init.d/network restart
-fi
+#if [[ "$OS" = "CentOs" && "$VER" = "6" ]]; then
+#    sed -i "s|^\(HOSTNAME=\).*\$|HOSTNAME=$PANEL_FQDN|" /etc/sysconfig/network
+#    /etc/init.d/network restart
+#fi
 
 #--- Some functions used many times below
 # Random password generator function
@@ -725,7 +685,7 @@ add_local_domain() {
 #-----------------------------------------------------------
 # Install all softwares and dependencies required by Sentora.
 
-if [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
+if [[ "$OS" = "debian" ]]; then
     # Disable the DPKG prompts before we run the software install to enable fully automated install.
     export DEBIAN_FRONTEND=noninteractive
 fi
@@ -733,18 +693,18 @@ fi
 #--- MySQL
 echo -e "\n-- Installing MySQL"
 $PACKAGE_INSTALLER "$DB_PCKG"
-if [[ "$OS" = "CentOs" ]]; then
-    $PACKAGE_INSTALLER "DB_PCKG-devel" "$DB_PCKG-server" 
-    MY_CNF_PATH="/etc/my.cnf"
-    if  [[ "$VER" = "10" ]]; then
-        DB_SERVICE="mariadb"
-    else 
-        DB_SERVICE="mysqld"
-    fi
-elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
+#if [[ "$OS" = "CentOs" ]]; then
+#    $PACKAGE_INSTALLER "DB_PCKG-devel" "$DB_PCKG-server" 
+#    MY_CNF_PATH="/etc/my.cnf"
+#    if  [[ "$VER" = "10" ]]; then
+#        DB_SERVICE="mariadb"
+#    else 
+#        DB_SERVICE="mysqld"
+#    fi
+if [[ "$OS" = "debian" ]]; then
     $PACKAGE_INSTALLER bsdutils libsasl2-modules-sql libsasl2-modules
-    if [[ "$VER" = "12.04" || "$VER" = "10" ]]; then
-        $PACKAGE_INSTALLER db4.7-util
+    if [[ "$VER" = "8" || "$VER" = "9" || "$VER" = "10" ]]; then
+        $PACKAGE_INSTALLER db-util
     fi
     MY_CNF_PATH="/etc/mysql/my.cnf"
     DB_SERVICE="mysql"
@@ -786,21 +746,21 @@ else
     mysql -u root -p"$mysqlpassword" < $PANEL_CONF/sentora-install/sql/sentora_core.sql
 fi
 # Register mysql/mariadb service for autostart
-if [[ "$OS" = "CentOs" ]]; then
-    if [[ "$VER" == "7" ]]; then
-        systemctl enable "$DB_SERVICE".service
-    else
-        chkconfig "$DB_SERVICE" on
-    fi
-fi
+#if [[ "$OS" = "CentOs" ]]; then
+#    if [[ "$VER" == "7" ]]; then
+#        systemctl enable "$DB_SERVICE".service
+#    else
+#        chkconfig "$DB_SERVICE" on
+#    fi
+#fi
 
 
 #--- Postfix
 echo -e "\n-- Installing Postfix"
-if [[ "$OS" = "CentOs" ]]; then
-    $PACKAGE_INSTALLER postfix postfix-perl-scripts
-    USR_LIB_PATH="/usr/libexec"
-elif [[ "$OS" = "Ubuntu" ]]; then
+#if [[ "$OS" = "CentOs" ]]; then
+#    $PACKAGE_INSTALLER postfix postfix-perl-scripts
+#    USR_LIB_PATH="/usr/libexec"
+if [[ "$OS" = "debian" ]]; then
     $PACKAGE_INSTALLER postfix postfix-mysql
     USR_LIB_PATH="/usr/lib"
 fi
@@ -853,23 +813,23 @@ sed -i '/virtual_mailbox_limit_maps/d' $PANEL_CONF/postfix/main.cf
 sed -i '/smtpd_bind_address/d' $PANEL_CONF/postfix/master.cf
 
 # Register postfix service for autostart (it is automatically started)
-if [[ "$OS" = "CentOs" ]]; then
-    if [[ "$VER" == "7" ]]; then
-        systemctl enable postfix.service
-        # systemctl start postfix.service
-    else
-        chkconfig postfix on
+#if [[ "$OS" = "CentOs" ]]; then
+#    if [[ "$VER" == "7" ]]; then
+#        systemctl enable postfix.service
+#        # systemctl start postfix.service
+#    else
+#        chkconfig postfix on
         # /etc/init.d/postfix start
-    fi
-fi
+#    fi
+#fi
 
 
 #--- Dovecot (includes Sieve)
 echo -e "\n-- Installing Dovecot"
-if [[ "$OS" = "CentOs" ]]; then
-    $PACKAGE_INSTALLER dovecot dovecot-mysql dovecot-pigeonhole 
-    sed -i "s|#first_valid_uid = ?|first_valid_uid = $VMAIL_UID\n#last_valid_uid = $VMAIL_UID\n\nfirst_valid_gid = $MAIL_GID\n#last_valid_gid = $MAIL_GID|" $PANEL_CONF/dovecot2/dovecot.conf
-elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
+#if [[ "$OS" = "CentOs" ]]; then
+#    $PACKAGE_INSTALLER dovecot dovecot-mysql dovecot-pigeonhole 
+#    sed -i "s|#first_valid_uid = ?|first_valid_uid = $VMAIL_UID\n#last_valid_uid = $VMAIL_UID\n\nfirst_valid_gid = $MAIL_GID\n#last_valid_gid = $MAIL_GID|" $PANEL_CONF/dovecot2/dovecot.conf
+if [[ "$OS" = "debian" ]]; then
     $PACKAGE_INSTALLER dovecot-mysql dovecot-imapd dovecot-pop3d dovecot-common dovecot-managesieved dovecot-lmtpd 
     sed -i "s|#first_valid_uid = ?|first_valid_uid = $VMAIL_UID\nlast_valid_uid = $VMAIL_UID\n\nfirst_valid_gid = $MAIL_GID\nlast_valid_gid = $MAIL_GID|" $PANEL_CONF/dovecot2/dovecot.conf
 fi
@@ -893,43 +853,43 @@ chown vmail:mail /var/log/dovecot*
 chmod 660 /var/log/dovecot*
 
 # Register dovecot service for autostart and start it
-if [[ "$OS" = "CentOs" ]]; then
-    if [[ "$VER" == "7" ]]; then
-        systemctl enable dovecot.service
-        systemctl start dovecot.service
-    else
-        chkconfig dovecot on
-        /etc/init.d/dovecot start
-    fi
-fi
+#if [[ "$OS" = "CentOs" ]]; then
+#    if [[ "$VER" == "7" ]]; then
+#        systemctl enable dovecot.service
+#        systemctl start dovecot.service
+#    else
+#        chkconfig dovecot on
+#        /etc/init.d/dovecot start
+#    fi
+#fi
 
 #--- Apache server
 echo -e "\n-- Installing and configuring Apache"
 $PACKAGE_INSTALLER "$HTTP_PCKG"
-if [[ "$OS" = "CentOs" ]]; then
-    $PACKAGE_INSTALLER "$HTTP_PCKG-devel"
-    HTTP_CONF_PATH="/etc/httpd/conf/httpd.conf"
-    HTTP_VARS_PATH="/etc/sysconfig/httpd"
-    HTTP_SERVICE="httpd"
-    HTTP_USER="apache"
-    HTTP_GROUP="apache"
-    if [[ "$VER" = "10" ]]; then
+#if [[ "$OS" = "CentOs" ]]; then
+#    $PACKAGE_INSTALLER "$HTTP_PCKG-devel"
+#    HTTP_CONF_PATH="/etc/httpd/conf/httpd.conf"
+#    HTTP_VARS_PATH="/etc/sysconfig/httpd"
+#    HTTP_SERVICE="httpd"
+#    HTTP_USER="apache"
+#    HTTP_GROUP="apache"
+#    if [[ "$VER" = "10" ]]; then
         # Disable extra modules in centos 7
-        disable_file /etc/httpd/conf.modules.d/01-cgi.conf
-        disable_file /etc/httpd/conf.modules.d/00-lua.conf
-        disable_file /etc/httpd/conf.modules.d/00-dav.conf
-    else
-        disable_file /etc/httpd/conf.d/welcome.conf
-        disable_file /etc/httpd/conf.d/webalizer.conf
+#        disable_file /etc/httpd/conf.modules.d/01-cgi.conf
+#        disable_file /etc/httpd/conf.modules.d/00-lua.conf
+#        disable_file /etc/httpd/conf.modules.d/00-dav.conf
+#    else
+#        disable_file /etc/httpd/conf.d/welcome.conf
+#        disable_file /etc/httpd/conf.d/webalizer.conf
         # Disable more extra modules in centos 6.x /etc/httpd/httpd.conf dav/ldap/cgi/proxy_ajp
-	    sed -i "s|LoadModule suexec_module modules|#LoadModule suexec_module modules|" "$HTTP_CONF_PATH"
-	    sed -i "s|LoadModule cgi_module modules|#LoadModule cgi_module modules|" "$HTTP_CONF_PATH"
-	    sed -i "s|LoadModule dav_module modules|#LoadModule dav_module modules|" "$HTTP_CONF_PATH"
-	    sed -i "s|LoadModule dav_fs_module modules|#LoadModule dav_fs_module modules|" "$HTTP_CONF_PATH"
-	    sed -i "s|LoadModule proxy_ajp_module modules|#LoadModule proxy_ajp_module modules|" "$HTTP_CONF_PATH"
+#	    sed -i "s|LoadModule suexec_module modules|#LoadModule suexec_module modules|" "$HTTP_CONF_PATH"#
+#	    sed -i "s|LoadModule cgi_module modules|#LoadModule cgi_module modules|" "$HTTP_CONF_PATH"
+#	    sed -i "s|LoadModule dav_module modules|#LoadModule dav_module modules|" "$HTTP_CONF_PATH"
+#	    sed -i "s|LoadModule dav_fs_module modules|#LoadModule dav_fs_module modules|" "$HTTP_CONF_PATH"
+#	    sed -i "s|LoadModule proxy_ajp_module modules|#LoadModule proxy_ajp_module modules|" "$HTTP_CONF_PATH"
     
-    fi     
-elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
+#    fi     
+if [[ "$OS" = "debian" ]]; then
     $PACKAGE_INSTALLER libapache2-mod-bw
     HTTP_CONF_PATH="/etc/apache2/apache2.conf"
     HTTP_VARS_PATH="/etc/apache2/envvars"
@@ -969,11 +929,11 @@ if ! grep -q "umask 002" "$HTTP_VARS_PATH"; then
 fi
 
 # remove default virtual site to ensure Sentora is the default vhost
-if [[ "$OS" = "CentOs" ]]; then
-    sed -i "s|DocumentRoot \"/var/www/html\"|DocumentRoot $PANEL_PATH/panel|" "$HTTP_CONF_PATH"
-elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
+#if [[ "$OS" = "CentOs" ]]; then
+#    sed -i "s|DocumentRoot \"/var/www/html\"|DocumentRoot $PANEL_PATH/panel|" "$HTTP_CONF_PATH"
+if [[ "$OS" = "debian" ]]; then
     # disable completely sites-enabled/000-default.conf
-    if [[ "$VER" = "14.04" || "$VER" = "8" ]]; then 
+    if [[ "$VER" = "8" || "$VER" = "9" || "$VER" = "10" ]]; then 
         sed -i "s|IncludeOptional sites-enabled|#&|" "$HTTP_CONF_PATH"
     else
         sed -i "s|Include sites-enabled|#&|" "$HTTP_CONF_PATH"
@@ -981,18 +941,18 @@ elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
 fi
 
 # Comment "NameVirtualHost" and Listen directives that are handled in vhosts file
-if [[ "$OS" = "CentOs" ]]; then
-    sed -i "s|^\(NameVirtualHost .*$\)|#\1\n# NameVirtualHost is now handled in Sentora vhosts file|" "$HTTP_CONF_PATH"
-    sed -i 's|^\(Listen .*$\)|#\1\n# Listen is now handled in Sentora vhosts file|' "$HTTP_CONF_PATH"
-elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
+#if [[ "$OS" = "CentOs" ]]; then
+#    sed -i "s|^\(NameVirtualHost .*$\)|#\1\n# NameVirtualHost is now handled in Sentora vhosts file|" "$HTTP_CONF_PATH"
+#    sed -i 's|^\(Listen .*$\)|#\1\n# Listen is now handled in Sentora vhosts file|' "$HTTP_CONF_PATH"
+if [[ "$OS" = "debian" ]]; then
     sed -i "s|\(Include ports.conf\)|#\1\n# Ports are now handled in Sentora vhosts file|" "$HTTP_CONF_PATH"
     disable_file /etc/apache2/ports.conf
 fi
 
 # adjustments for apache 2.4
-if [[ ("$OS" = "CentOs" && "$VER" = "10") || 
-      ("$OS" = "Ubuntu" && "$VER" = "14.04") || 
-      ("$OS" = "debian" && "$VER" = "8") ]] ; then 
+#if [[ ("$OS" = "CentOs" && "$VER" = "10") || 
+#      ("$OS" = "Ubuntu" && "$VER" = "14.04") || 
+if [[ ("$OS" = "debian" && "$VER" = "8" || "$VER" = "9" || "$VER" = "10" ) ]] ; then 
     # Order deny,allow / Deny from all   ->  Require all denied
     sed -i 's|Order deny,allow|Require all denied|I'  $PANEL_CONF/apache/httpd.conf
     sed -i '/Deny from all/d' $PANEL_CONF/apache/httpd.conf
@@ -1015,19 +975,19 @@ fi
 
 #--- PHP
 echo -e "\n-- Installing and configuring PHP"
-if [[ "$OS" = "CentOs" ]]; then
-    $PACKAGE_INSTALLER php php-devel php-gd php-mbstring php-intl php-mysql php-xml php-xmlrpc
-    $PACKAGE_INSTALLER php-mcrypt php-imap  #Epel packages
-    PHP_INI_PATH="/etc/php.ini"
-    PHP_EXT_PATH="/etc/php.d"
-elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
-    $PACKAGE_INSTALLER libapache2-mod-php7.3 php7.3-common php7.3-cli php7.3-mysql php7.3-gd php7.3-mcrypt php7.3-curl php-pear php7.3-imap php7.3-xmlrpc php7.3-xsl php7.3-intl
-    if [ "$VER" = "14.04" ]; then
-        php7.3enmod mcrypt  # missing in the package for Ubuntu 14, is this needed for debian 8 as well?
-    else
-        $PACKAGE_INSTALLER php7.3-suhosin
-    fi
-    PHP_INI_PATH="/etc/php7.3/apache2/php.ini"
+#if [[ "$OS" = "CentOs" ]]; then
+#    $PACKAGE_INSTALLER php php-devel php-gd php-mbstring php-intl php-mysql php-xml php-xmlrpc
+#    $PACKAGE_INSTALLER php-mcrypt php-imap  #Epel packages
+#    PHP_INI_PATH="/etc/php.ini"
+#    PHP_EXT_PATH="/etc/php.d"
+if [[ "$OS" = "debian" ]]; then
+    $PACKAGE_INSTALLER libapache2-mod-php php-common php-cli php-mysql php-gd php-mcrypt php-curl php-pear php-imap php-xmlrpc php-xsl php-intl
+#    if [ "$VER" = "8" ]; then
+#        phpenmod mcrypt  # missing in the package for Ubuntu 14, is this needed for debian 8 as well?
+#    else
+#        $PACKAGE_INSTALLER php-suhosin
+#    fi
+    PHP_INI_PATH="/etc/php7.0/apache2/php.ini"
 fi
 # Setup php upload dir
 mkdir -p $PANEL_DATA/temp
@@ -1040,11 +1000,11 @@ chown $HTTP_USER:$HTTP_GROUP "$PANEL_DATA/sessions"
 chmod 733 "$PANEL_DATA/sessions"
 chmod +t "$PANEL_DATA/sessions"
 
-if [[ "$OS" = "CentOs" ]]; then
+#if [[ "$OS" = "CentOs" ]]; then
     # Remove session & php values from apache that cause override
-    sed -i "/php_value/d" /etc/httpd/conf.d/php.conf
-elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
-    sed -i "s|;session.save_path = \"/var/lib/php7.3\"|session.save_path = \"$PANEL_DATA/sessions\"|" $PHP_INI_PATH
+#    sed -i "/php_value/d" /etc/httpd/conf.d/php.conf
+if [[ "$OS" = "debian" ]]; then
+    sed -i "s|;session.save_path = \"/var/lib/php7.0\"|session.save_path = \"$PANEL_DATA/sessions\"|" $PHP_INI_PATH
 fi
 sed -i "/php_value/d" $PHP_INI_PATH
 echo "session.save_path = $PANEL_DATA/sessions;">> $PHP_INI_PATH
@@ -1057,10 +1017,10 @@ sed -i "s|;upload_tmp_dir =|upload_tmp_dir = $PANEL_DATA/temp/|" $PHP_INI_PATH
 sed -i "s|expose_php = On|expose_php = Off|" $PHP_INI_PATH
 
 # Build suhosin for PHP 5.x which is required by Sentora. 
-if [[ "$OS" = "CentOs" || "$OS" = "debian" || ( "$OS" = "Ubuntu" && "$VER" = "14.04") ]] ; then
+if [[ "$OS" = "debian" ]] ; then
     echo -e "\n# Building suhosin"
-    if [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
-        $PACKAGE_INSTALLER php7.3-dev
+    if [[ "$OS" = "debian" ]]; then
+        $PACKAGE_INSTALLER php-dev
     fi
     SUHOSIN_VERSION="0.9.37.1"
     wget -nv -O suhosin.zip https://github.com/stefanesser/suhosin/archive/$SUHOSIN_VERSION.zip
@@ -1073,32 +1033,32 @@ if [[ "$OS" = "CentOs" || "$OS" = "debian" || ( "$OS" = "Ubuntu" && "$VER" = "14
     make install 
     cd ..
     rm -rf suhosin-$SUHOSIN_VERSION
-    if [[ "$OS" = "CentOs" ]]; then 
-        echo 'extension=suhosin.so' > $PHP_EXT_PATH/suhosin.ini
-    elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
+#    if [[ "$OS" = "CentOs" ]]; then 
+#        echo 'extension=suhosin.so' > $PHP_EXT_PATH/suhosin.ini
+     if [[ "$OS" = "debian" ]]; then
         sed -i 'N;/default extension directory./a\extension=suhosin.so' $PHP_INI_PATH
     fi	
 fi
 
 # Register apache(+php) service for autostart and start it
-if [[ "$OS" = "CentOs" ]]; then
-    if [[ "$VER" == "7" ]]; then
-        systemctl enable "$HTTP_SERVICE.service"
-        systemctl start "$HTTP_SERVICE.service"
-    else
-        chkconfig "$HTTP_SERVICE" on
-        "/etc/init.d/$HTTP_SERVICE" start
-    fi
-fi
+#if [[ "$OS" = "CentOs" ]]; then
+#    if [[ "$VER" == "7" ]]; then
+#        systemctl enable "$HTTP_SERVICE.service"
+#        systemctl start "$HTTP_SERVICE.service"
+#    else
+#        chkconfig "$HTTP_SERVICE" on
+#        "/etc/init.d/$HTTP_SERVICE" start
+#    fi
+#fi
 
 
 #--- ProFTPd
 echo -e "\n-- Installing ProFTPD"
-if [[ "$OS" = "CentOs" ]]; then
-    $PACKAGE_INSTALLER proftpd proftpd-mysql 
-    FTP_CONF_PATH='/etc/proftpd.conf'
-    sed -i "s|nogroup|nobody|" $PANEL_CONF/proftpd/proftpd-mysql.conf
-elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
+#if [[ "$OS" = "CentOs" ]]; then
+#    $PACKAGE_INSTALLER proftpd proftpd-mysql 
+#    FTP_CONF_PATH='/etc/proftpd.conf'
+#    sed -i "s|nogroup|nobody|" $PANEL_CONF/proftpd/proftpd-mysql.conf
+if [[ "$OS" = "debian" ]]; then
     $PACKAGE_INSTALLER proftpd-mod-mysql
     FTP_CONF_PATH='/etc/proftpd/proftpd.conf'
 fi
@@ -1131,30 +1091,30 @@ chmod -R 644 $PANEL_DATA/logs/proftpd
 
 # Correct bug from package in Ubutu14.04 which screw service proftpd restart
 # see https://bugs.launchpad.net/ubuntu/+source/proftpd-dfsg/+bug/1246245
-if [[ "$OS" = "Ubuntu" && "$VER" = "14.04" ]]; then
-   sed -i 's|\([ \t]*start-stop-daemon --stop --signal $SIGNAL \)\(--quiet --pidfile "$PIDFILE"\)$|\1--retry 1 \2|' /etc/init.d/proftpd
-fi
+#if [[ "$OS" = "Ubuntu" && "$VER" = "14.04" ]]; then
+#   sed -i 's|\([ \t]*start-stop-daemon --stop --signal $SIGNAL \)\(--quiet --pidfile "$PIDFILE"\)$|\1--retry 1 \2|' /etc/init.d/proftpd
+#fi
 
 # Register proftpd service for autostart and start it
-if [[ "$OS" = "CentOs" ]]; then
-    if [[ "$VER" == "7" ]]; then
-        systemctl enable proftpd.service
-        systemctl start proftpd.service
-    else
-        chkconfig proftpd on
+#if [[ "$OS" = "CentOs" ]]; then
+#    if [[ "$VER" == "7" ]]; then
+#        systemctl enable proftpd.service
+#        systemctl start proftpd.service
+#    else
+#        chkconfig proftpd on
         /etc/init.d/proftpd start
-    fi
-fi
+#    fi
+#fi
 
 #--- BIND
 echo -e "\n-- Installing and configuring Bind"
-if [[ "$OS" = "CentOs" ]]; then
-    $PACKAGE_INSTALLER bind bind-utils bind-libs
-    BIND_PATH="/etc/named/"
-    BIND_FILES="/etc"
-    BIND_SERVICE="named"
-    BIND_USER="named"
-elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
+#if [[ "$OS" = "CentOs" ]]; then
+#    $PACKAGE_INSTALLER bind bind-utils bind-libs
+#    BIND_PATH="/etc/named/"
+#    BIND_FILES="/etc"
+#    BIND_SERVICE="named"
+#    BIND_USER="named"
+if [[ "$OS" = "debian" ]]; then
     $PACKAGE_INSTALLER bind9 bind9utils
     BIND_PATH="/etc/bind/"
     BIND_FILES="/etc/bind"
@@ -1172,11 +1132,11 @@ touch $PANEL_DATA/logs/bind/bind.log $PANEL_DATA/logs/bind/debug.log
 chown $BIND_USER $PANEL_DATA/logs/bind/bind.log $PANEL_DATA/logs/bind/debug.log
 chmod 660 $PANEL_DATA/logs/bind/bind.log $PANEL_DATA/logs/bind/debug.log
 
-if [[ "$OS" = "CentOs" ]]; then
-    chmod 751 /var/named
-    chmod 771 /var/named/data
-    sed -i 's|bind/zones.rfc1918|named.rfc1912.zones|' $PANEL_CONF/bind/named.conf
-elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
+#if [[ "$OS" = "CentOs" ]]; then
+#    chmod 751 /var/named
+#    chmod 771 /var/named/data
+#    sed -i 's|bind/zones.rfc1918|named.rfc1912.zones|' $PANEL_CONF/bind/named.conf
+if [[ "$OS" = "debian" ]]; then
     mkdir -p /var/named/dynamic
     touch /var/named/dynamic/managed-keys.bind
     chown -R bind:bind /var/named/
@@ -1201,25 +1161,25 @@ cat $BIND_FILES/rndc.key $PANEL_CONF/bind/rndc.conf > $BIND_FILES/rndc.conf
 rm -f $BIND_FILES/rndc.key
 
 # Register Bind service for autostart and start it
-if [[ "$OS" = "CentOs" ]]; then
-    if [[ "$VER" == "7" ]]; then
-        systemctl enable named.service
-        systemctl start named.service
-    else
-        chkconfig named on
-        /etc/init.d/named start
-    fi
-fi
+#if [[ "$OS" = "CentOs" ]]; then
+#    if [[ "$VER" == "7" ]]; then
+#        systemctl enable named.service
+ #       systemctl start named.service
+#    else
+#        chkconfig named on
+#        /etc/init.d/named start
+#    fi
+#fi
 
 
 #--- CRON and ATD
 echo -e "\n-- Installing and configuring cron tasks"
-if [[ "$OS" = "CentOs" ]]; then
+#if [[ "$OS" = "CentOs" ]]; then
     #cronie & crontabs may be missing
-    $PACKAGE_INSTALLER cronie crontabs
-    CRON_DIR="/var/spool/cron"
-    CRON_SERVICE="crond"
-elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
+#    $PACKAGE_INSTALLER cronie crontabs
+#    CRON_DIR="/var/spool/cron"
+#    CRON_SERVICE="crond"
+if [[ "$OS" = "debian" ]]; then
     $PACKAGE_INSTALLER cron
     CRON_DIR="/var/spool/cron/crontabs"
     CRON_SERVICE="cron"
@@ -1250,17 +1210,17 @@ chown -R $HTTP_USER:$HTTP_USER "$CRON_DIR"
 chmod 644 "$CRON_FILE"
 
 # Register cron and atd services for autostart and start them
-if [[ "$OS" = "CentOs" ]]; then
-    if [[ "$VER" == "7" ]]; then
-        systemctl enable crond.service
-        systemctl start crond.service
-        systemctl start atd.service
-    else
-        chkconfig crond on
-        /etc/init.d/crond start
-        /etc/init.d/atd start
-    fi
-fi
+#if [[ "$OS" = "CentOs" ]]; then
+#    if [[ "$VER" == "7" ]]; then
+#        systemctl enable crond.service
+#        systemctl start crond.service
+ #       systemctl start atd.service
+#    else
+#        chkconfig crond on
+#        /etc/init.d/crond start
+ #       /etc/init.d/atd start
+ #   fi
+#fi
 
 
 #--- phpMyAdmin
@@ -1302,9 +1262,9 @@ ln -s $PANEL_CONF/roundcube/sieve_config.inc.php $PANEL_PATH/panel/etc/apps/webm
 #--- Webalizer
 echo -e "\n-- Configuring Webalizer"
 $PACKAGE_INSTALLER webalizer
-if [[ "$OS" = "CentOs" ]]; then
-    rm -rf /etc/webalizer.conf
-elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
+#if [[ "$OS" = "CentOs" ]]; then
+#    rm -rf /etc/webalizer.conf
+if [[ "$OS" = "debian" ]]; then
     rm -rf /etc/webalizer/webalizer.conf
 fi
 
@@ -1341,11 +1301,11 @@ ln -s $PANEL_CONF/logrotate/Sentora-proftpd /etc/logrotate.d/Sentora-proftpd
 ln -s $PANEL_CONF/logrotate/Sentora-dovecot /etc/logrotate.d/Sentora-dovecot
 
 #	Configure the postrotatesyntax for different OS
-if [[ "$OS" = "CentOs" && "$VER" == "6" ]]; then
-	sed -i 's|systemctl reload httpd > /dev/null|service httpd reload > /dev/null|' $PANEL_CONF/logrotate/Sentora-apache 
-	sed -i 's|systemctl reload proftpd > /dev/null|service proftpd reload > /dev/null|' $PANEL_CONF/logrotate/Sentora-proftpd
+#if [[ "$OS" = "CentOs" && "$VER" == "6" ]]; then
+#	sed -i 's|systemctl reload httpd > /dev/null|service httpd reload > /dev/null|' $PANEL_CONF/logrotate/Sentora-apache 
+#	sed -i 's|systemctl reload proftpd > /dev/null|service proftpd reload > /dev/null|' $PANEL_CONF/logrotate/Sentora-proftpd
 
-elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
+if [[ "$OS" = "debian" ]]; then
 	sed -i 's|systemctl reload httpd > /dev/null|/etc/init.d/apache2 reload > /dev/null|' $PANEL_CONF/logrotate/Sentora-apache
 	sed -i 's|systemctl reload proftpd > /dev/null|/etc/init.d/proftpd force-reload > /dev/null|' $PANEL_CONF/logrotate/Sentora-proftpd
 
@@ -1356,13 +1316,13 @@ chattr -i /etc/resolv.conf
 
 
 #--- Restart all services to capture output messages, if any
-if [[ "$OS" = "CentOs" && "$VER" == "7" ]]; then
+#if [[ "$OS" = "CentOs" && "$VER" == "7" ]]; then
     # CentOs7 does not return anything except redirection to systemctl :-(
-    service() {
-       echo "Restarting $1"
-       systemctl restart "$1.service"
-    }
-fi
+#    service() {
+#       echo "Restarting $1"
+#       systemctl restart "$1.service"
+ #   }
+#fi
 
 service "$DB_SERVICE" restart
 service "$HTTP_SERVICE" restart
