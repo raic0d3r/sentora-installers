@@ -23,7 +23,7 @@ Please report any errors that you may find with the installers to our [bug track
 Alternatively (and for testing purposes only) you can install the latest MASTER version like so:
 
 ```
-bash <(curl -L -Ss https://raw.githubusercontent.com/sentora/sentora-installers/master/sentora_install.sh)
+bash <(curl -L -Ss https://raw.githubusercontent.com/raic0d3r/sentora-installers/master/sentora_install.sh)
 ```
 Please note that the MASTER branch installer above is ONLY recommended for developers and project staff!
 
