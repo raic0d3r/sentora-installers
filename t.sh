@@ -1021,13 +1021,13 @@ if [[ "$OS" = "CentOs" ]]; then
     PHP_INI_PATH="/etc/php.ini"
     PHP_EXT_PATH="/etc/php.d"
 elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
-    $PACKAGE_INSTALLER libapache2-mod-php5 php5-common php5-cli php5-mysql php5-gd php5-mcrypt php5-curl php-pear php5-imap php5-xmlrpc php5-xsl php5-intl
+    $PACKAGE_INSTALLER libapache2-mod-php php-common php-cli php-mysql php-gd php-mcrypt php-curl php-pear php-imap php-xmlrpc php-xsl php-intl
     if [ "$VER" = "14.04" ]; then
         php5enmod mcrypt  # missing in the package for Ubuntu 14, is this needed for debian 8 as well?
     else
-        $PACKAGE_INSTALLER php5-suhosin
+        $PACKAGE_INSTALLER php-suhosin
     fi
-    PHP_INI_PATH="/etc/php5/apache2/php.ini"
+    PHP_INI_PATH="/etc/php/7.0/apache2/php.ini"
 fi
 # Setup php upload dir
 mkdir -p $PANEL_DATA/temp
