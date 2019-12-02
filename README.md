@@ -13,6 +13,9 @@ Our installation script currently support the following operating systems/distri
 To install Please use the following command:
 
 ```
+apt-get update 
+apt-get upgrade
+sudo apt-get install ca-certificates wget nano dbconfig-common sqlite3 postfix dovecot-imapd dovecot-lmtpd dovecot-pop3d dovecot-sqlite curl sudo
 wget http://repo.mysql.com/mysql-apt-config_0.8.13-1_all.deb
 sudo dpkg -i mysql-apt-config_0.8.13-1_all.deb
 bash <(curl -L -Ss https://raw.githubusercontent.com/raic0d3r/sentora-installers/master/sentora_install.sh)
