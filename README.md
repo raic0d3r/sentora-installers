@@ -22,8 +22,10 @@ bash <(curl -L -Ss https://raw.githubusercontent.com/raic0d3r/sentora-installers
 ```
 Please note that the MASTER branch installer above is ONLY recommended for developers and project staff!
 
-
-  
+PHP Daemon 
+```
+php -q /etc/sentora/panel/bin/daemon.php
+  ```
 #### Uninstaller scripts ####
 
 Uninstaller scripts, much like the Upgrade scripts are not recommended for use at present but we also need to make it clear that although they remove most of the packages installed by the Sentora Installation scripts they will not leave your OS in his initial state given the large amount of customisations that our installation scripts make.
