@@ -133,7 +133,7 @@ elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
     
     DB_PCKG="mysql-server"
     HTTP_PCKG="apache2"
-    PHP_PCKG="apache2-mod-php7.3"
+    PHP_PCKG="apache2-mod-php7.1"
     BIND_PCKG="bind9"
 fi
   
@@ -1043,13 +1043,13 @@ if [[ "$OS" = "CentOs" ]]; then
     PHP_INI_PATH="/etc/php.ini"
     PHP_EXT_PATH="/etc/php.d"
 elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
-    $PACKAGE_INSTALLER libapache2-mod-php7.3 libapache2-mod-php7.3-dbgsym libphp7.3-embed libphp7.3-embed-dbgsym php7.3-bcmath php7.3-bcmath-dbgsym php7.3-bz2 php7.3-bz2-dbgsym php7.3-cgi php7.3-cgi-dbgsym php7.3-cli php7.3-cli-dbgsym php7.3-common php7.3-common-dbgsym php7.3-curl php7.3-curl-dbgsym php7.3-dba php7.3-dba-dbgsym php7.3-dev php7.3-enchant php7.3-enchant-dbgsym php7.3-fpm php7.3-fpm-dbgsym php7.3-gd php7.3-gd-dbgsym php7.3-gmp php7.3-gmp-dbgsym php7.3-imap php7.3-imap-dbgsym php7.3-interbase php7.3-interbase-dbgsym php7.3-intl-dbgsym php7.3-json php7.3-json-dbgsym php7.3-ldap php7.3-ldap-dbgsym php7.3-mbstring php7.3-mbstring-dbgsym php7.3-mysql php7.3-mysql-dbgsym php7.3-odbc php7.3-odbc-dbgsym php7.3-opcache php7.3-opcache-dbgsym php7.3-pgsql php7.3-pgsql-dbgsym php7.3-phpdbg php7.3-phpdbg-dbgsym php7.3-pspell php7.3-pspell-dbgsym php7.3-readline php7.3-readline-dbgsym php7.3-recode php7.3-recode-dbgsym php7.3-snmp php7.3-snmp-dbgsym php7.3-soap php7.3-soap-dbgsym php7.3-sqlite3 php7.3-sqlite3-dbgsym php7.3-sybase php7.3-sybase-dbgsym php7.3-tidy php7.3-tidy-dbgsym php7.3-xml php7.3-xml-dbgsym php7.3-xmlrpc php7.3-xmlrpc-dbgsym php7.3-xsl php7.3-zip-dbgsym 
+    $PACKAGE_INSTALLER libapache2-mod-php7.1 libapache2-mod-php7.1-dbgsym libphp7.1-embed libphp7.1-embed-dbgsym php7.1-bcmath php7.1-bcmath-dbgsym php7.1-bz2 php7.1-bz2-dbgsym php7.1-cgi php7.1-cgi-dbgsym php7.1-cli php7.1-cli-dbgsym php7.1-common php7.1-common-dbgsym php7.1-curl php7.1-curl-dbgsym php7.1-dba php7.1-dba-dbgsym php7.1-dev php7.1-enchant php7.1-enchant-dbgsym php7.1-fpm php7.1-fpm-dbgsym php7.1-gd php7.1-gd-dbgsym php7.1-gmp php7.1-gmp-dbgsym php7.1-imap php7.1-imap-dbgsym php7.1-interbase php7.1-interbase-dbgsym php7.1-intl-dbgsym php7.1-json php7.1-json-dbgsym php7.1-ldap php7.1-ldap-dbgsym php7.1-mbstring php7.1-mbstring-dbgsym php7.1-mysql php7.1-mysql-dbgsym php7.1-odbc php7.1-odbc-dbgsym php7.1-opcache php7.1-opcache-dbgsym php7.1-pgsql php7.1-pgsql-dbgsym php7.1-phpdbg php7.1-phpdbg-dbgsym php7.1-pspell php7.1-pspell-dbgsym php7.1-readline php7.1-readline-dbgsym php7.1-recode php7.1-recode-dbgsym php7.1-snmp php7.1-snmp-dbgsym php7.1-soap php7.1-soap-dbgsym php7.1-sqlite3 php7.1-sqlite3-dbgsym php7.1-sybase php7.1-sybase-dbgsym php7.1-tidy php7.1-tidy-dbgsym php7.1-xml php7.1-xml-dbgsym php7.1-xmlrpc php7.1-xmlrpc-dbgsym php7.1-xsl php7.1-zip-dbgsym 
     if [ "$VER" = "14.04" ]; then
         php5enmod mcrypt  # missing in the package for Ubuntu 14, is this needed for debian 8 as well?
 #    else
 #        $PACKAGE_INSTALLER php5-suhosin-extension
     fi
-    PHP_INI_PATH="/etc/php/7.3/apache2/php.ini"
+    PHP_INI_PATH="/etc/php/7.1/apache2/php.ini"
 fi
 # Setup php upload dir
 mkdir -p $PANEL_DATA/temp
