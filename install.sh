@@ -72,7 +72,7 @@ echo "Detected : $OS  $VER  $ARCH"
 
 if [[ "$OS" = "CentOs" && ("$VER" = "6" || "$VER" = "7" ) || 
       "$OS" = "Ubuntu" && ("$VER" = "12.04" || "$VER" = "14.04" ) || 
-      "$OS" = "debian" && ("$VER" = "9" || "$VER" = "8" ) ]] ; then
+      "$OS" = "debian" && ("$VER" = "7" || "$VER" = "8" || "$VER" = "9" || "$VER" = "10" ) ]] ; then
     echo "Ok."
 else
     echo "Sorry, this OS is not supported by Sentora." 
@@ -133,7 +133,7 @@ elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
     
     DB_PCKG="mysql-server"
     HTTP_PCKG="apache2"
-    PHP_PCKG="apache2-mod-php7.0"
+    PHP_PCKG="apache2-mod-php5.6"
     BIND_PCKG="bind9"
 fi
   
@@ -433,7 +433,18 @@ deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) main restricted universe
 deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-security main restricted universe multiverse
 deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc)-updates main restricted universe multiverse
 EOF
-    elif [ "$VER" = "8"  ]; then
+    elif [ "$VER" = "7"  ]; then
+        cat > /etc/apt/sources.list <<EOF
+deb http://httpredir.debian.org/debian $(lsb_release -sc) main
+deb-src http://httpredir.debian.org/debian $(lsb_release -sc) main
+
+deb http://httpredir.debian.org/debian $(lsb_release -sc)-updates main
+deb-src http://httpredir.debian.org/debian $(lsb_release -sc)-updates main
+
+deb http://security.debian.org/ $(lsb_release -sc)/updates main
+deb-src http://security.debian.org/ $(lsb_release -sc)/updates main
+EOF
+    elif [ "$VER" = "8" ]; then
         cat > /etc/apt/sources.list <<EOF
 deb http://httpredir.debian.org/debian $(lsb_release -sc) main
 deb-src http://httpredir.debian.org/debian $(lsb_release -sc) main
@@ -445,6 +456,17 @@ deb http://security.debian.org/ $(lsb_release -sc)/updates main
 deb-src http://security.debian.org/ $(lsb_release -sc)/updates main
 EOF
     elif [ "$VER" = "9" ]; then
+        cat > /etc/apt/sources.list <<EOF
+deb http://httpredir.debian.org/debian $(lsb_release -sc) main
+deb-src http://httpredir.debian.org/debian $(lsb_release -sc) main
+
+deb http://httpredir.debian.org/debian $(lsb_release -sc)-updates main
+deb-src http://httpredir.debian.org/debian $(lsb_release -sc)-updates main
+
+deb http://security.debian.org/ $(lsb_release -sc)/updates main
+deb-src http://security.debian.org/ $(lsb_release -sc)/updates main
+EOF
+    elif [ "$VER" = "10" ]; then
         cat > /etc/apt/sources.list <<EOF
 deb http://httpredir.debian.org/debian $(lsb_release -sc) main
 deb-src http://httpredir.debian.org/debian $(lsb_release -sc) main
@@ -1021,11 +1043,11 @@ if [[ "$OS" = "CentOs" ]]; then
     PHP_INI_PATH="/etc/php.ini"
     PHP_EXT_PATH="/etc/php.d"
 elif [[ "$OS" = "Ubuntu" || "$OS" = "debian" ]]; then
-    $PACKAGE_INSTALLER libapache2-mod-php php-common php-cli php-mysql php-gd php-mcrypt php-curl php-pear php-imap php-xmlrpc php-xsl php-intl
+    $PACKAGE_INSTALLER php-imagick phing php-amqp php-apcu php-gearman php-geoip php-gmagick php-http-request2 php-igbinary php-mailparse php-memcache php-memcached php-mongodb php-msgpack php-net-dns2 php-oauth php-http php-propro php-radius php-raphf php-redis php-rrd php-smbclient php-solr php-ssh2 php-stomp php-symfony-polyfill-php56 php-uploadprogress php-uuid php-yac php-yaml php-zmq php-xdebug libapache2-mod-php5.6 libapache2-mod-php5.6-dbgsym libphp5.6-embed libphp5.6-embed-dbgsym php-lua php-mongo php-pear php-phalcon php-xcache php5.6 php5.6-bcmath php5.6-bcmath-dbgsym php5.6-bz2 php5.6-bz2-dbgsym php5.6-cgi php5.6-cgi-dbgsym php5.6-cli php5.6-cli-dbgsym php5.6-common php5.6-common-dbgsym php5.6-curl php5.6-curl-dbgsym php5.6-dba php5.6-dba-dbgsym php5.6-dev php5.6-enchant php5.6-enchant-dbgsym php5.6-fpm php5.6-fpm-dbgsym php5.6-gd php5.6-gd-dbgsym php5.6-gmp php5.6-gmp-dbgsym php5.6-imap php5.6-imap-dbgsym php5.6-interbase php5.6-interbase-dbgsym php5.6-intl php5.6-intl-dbgsym php5.6-json php5.6-json-dbgsym php5.6-ldap php5.6-ldap-dbgsym php5.6-mbstring php5.6-mbstring-dbgsym php5.6-mcrypt php5.6-mcrypt-dbgsym php5.6-mysql php5.6-mysql-dbgsym php5.6-odbc php5.6-odbc-dbgsym php5.6-opcache php5.6-opcache-dbgsym php5.6-pgsql php5.6-pgsql-dbgsym php5.6-phpdbg php5.6-phpdbg-dbgsym php5.6-pspell php5.6-pspell-dbgsym php5.6-readline php5.6-readline-dbgsym php5.6-recode php5.6-recode-dbgsym php5.6-snmp php5.6-snmp-dbgsym php5.6-soap php5.6-soap-dbgsym php5.6-sqlite3 php5.6-sqlite3-dbgsym php5.6-sybase php5.6-sybase-dbgsym php5.6-tidy php5.6-tidy-dbgsym php5.6-xml php5.6-xml-dbgsym php5.6-xmlrpc php5.6-xmlrpc-dbgsym php5.6-xsl php5.6-zip php5.6-zip-dbgsym php5-suhosin-extension 
     if [ "$VER" = "14.04" ]; then
         php5enmod mcrypt  # missing in the package for Ubuntu 14, is this needed for debian 8 as well?
     else
-        $PACKAGE_INSTALLER php-suhosin
+        $PACKAGE_INSTALLER php5-suhosin-extension
     fi
     PHP_INI_PATH="/etc/php/7.0/apache2/php.ini"
 fi
