@@ -11,14 +11,30 @@ Our installation script currently support the following operating systems/distri
   
  
 To install Please use the following command:
+Update Server
+```
+apt-get update & apt-get upgrade
+```
+Install Some Important tools
 
 ```
-apt-get update 
-apt-get upgrade
-sudo apt-get install ca-certificates wget nano dbconfig-common sqlite3 postfix dovecot-imapd dovecot-lmtpd dovecot-pop3d dovecot-sqlite curl sudo
+apt-get install curl sudo apt-transport-https lsb-release ca-certificates wget nano dbconfig-common sqlite3 postfix dovecot-imapd dovecot-lmtpd dovecot-pop3d dovecot-sqlite 
+```
+Add PHP Source if your server has no php5.6
+
+```
+wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
+sh -c 'echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" > /etc/apt/sources.list.d/php.list'
+apt-get update
+```
+Now we Install Mysql Because I Like to use 5.6 or 5.7
+```
 wget http://repo.mysql.com/mysql-apt-config_0.8.13-1_all.deb
 sudo dpkg -i mysql-apt-config_0.8.13-1_all.deb
-bash <(curl -L -Ss https://raw.githubusercontent.com/raic0d3r/sentora-installers/master/sentora_install.sh)
+```
+All installed done now we run script
+```
+bash <(curl -L -Ss https://raw.githubusercontent.com/raic0d3r/sentora-installers/master/install.sh)
 ```
 Please note that the MASTER branch installer above is ONLY recommended for developers and project staff!
 
