@@ -11,7 +11,7 @@ echo "deb http://download.proxmox.com/debian/pve buster pve-no-subscription" > /
 Add the Proxmox VE repository key:
 ```
 wget http://download.proxmox.com/debian/proxmox-ve-release-5.x.gpg -O /etc/apt/trusted.gpg.d/proxmox-ve-release-5.x.gpg
-chmod +r /etc/apt/trusted.gpg.d/proxmox-ve-release-5.x.gpg  # optional, if you have a changed default umask
+chmod +r /etc/apt/trusted.gpg.d/proxmox-ve-release-5.x.gpg
 ```
 or
 ```
