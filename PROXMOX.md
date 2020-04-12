@@ -21,5 +21,5 @@ chmod +r /etc/apt/trusted.gpg.d/proxmox-ve-release-6.x.gpg  # optional, if you h
 Update your repository and system by running:
 ```
 apt update && apt upgrade
-apt-get install proxmox-ve pve-cluster
+apt-get install proxmox-ve pve-cluster ifupdown2
 ```
